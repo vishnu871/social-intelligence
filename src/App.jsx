@@ -10,11 +10,13 @@ import IntelligenceChat from "./components/IntelligenceChat";
 
 import { createRemainingRecommendations } from "./data/demoData";
 
+
 function toNumber(value, fallback = 0) {
   const number = Number(value);
 
   return Number.isFinite(number) ? number : fallback;
 }
+
 
 function getField(row, names, fallback = "") {
   for (const name of names) {
@@ -29,6 +31,7 @@ function getField(row, names, fallback = "") {
 
   return fallback;
 }
+
 
 function parseCSVLine(line) {
   const result = [];
@@ -66,6 +69,7 @@ function parseCSVLine(line) {
   return result;
 }
 
+
 function parseCSV(text) {
   const lines = text
     .replace(/\r/g, "")
@@ -91,6 +95,7 @@ function parseCSV(text) {
     return row;
   });
 }
+
 
 function normalizeRecommendation(row, index) {
   const platform = getField(
@@ -118,18 +123,31 @@ function normalizeRecommendation(row, index) {
   );
 
   const numericHour = toNumber(
-    getField(row, ["hour", "Hour"], 13),
+    getField(
+      row,
+      ["hour", "Hour"],
+      13
+    ),
     13
   );
 
-  const parsedDate = new Date(`${date}T12:00:00`);
+  const parsedDate = new Date(
+    `${date}T12:00:00`
+  );
 
   const day =
     parsedDate.toString() !== "Invalid Date"
-      ? parsedDate.toLocaleDateString("en-US", {
-          weekday: "long",
-        })
-      : getField(row, ["day", "Day"], "Monday");
+      ? parsedDate.toLocaleDateString(
+          "en-US",
+          {
+            weekday: "long",
+          }
+        )
+      : getField(
+          row,
+          ["day", "Day"],
+          "Monday"
+        );
 
   return {
     ...row,
@@ -149,81 +167,109 @@ function normalizeRecommendation(row, index) {
 
     production_id_v1: getField(
       row,
-      ["production_id_v1", "production_id"],
+      [
+        "production_id_v1",
+        "production_id",
+      ],
       `CSV-${index + 1}`
     ),
 
     content_brief_id_v1: getField(
       row,
-      ["content_brief_id_v1", "content_brief_id"],
+      [
+        "content_brief_id_v1",
+        "content_brief_id",
+      ],
       `CB-${index + 1}`
     ),
 
     approval_id_v1: getField(
       row,
-      ["approval_id_v1", "approval_id"],
+      [
+        "approval_id_v1",
+        "approval_id",
+      ],
       `APR-${index + 1}`
     ),
 
     date,
+
     day,
+
     hour: numericHour,
+
     platform,
+
     content_type: contentType,
+
     theme,
 
-    final_opportunity_score_v3: toNumber(
+    final_opportunity_score_v3:
+      toNumber(
+        getField(
+          row,
+          [
+            "final_opportunity_score_v3",
+            "final_score",
+            "score",
+          ],
+          0
+        )
+      ),
+
+    historical_opportunity_v3:
+      toNumber(
+        getField(
+          row,
+          [
+            "historical_opportunity_v3",
+          ],
+          0
+        )
+      ),
+
+    historical_evidence_strength_v3:
+      toNumber(
+        getField(
+          row,
+          [
+            "historical_evidence_strength_v3",
+          ],
+          0
+        )
+      ),
+
+    historical_evidence_coverage_v3:
+      toNumber(
+        getField(
+          row,
+          [
+            "historical_evidence_coverage_v3",
+          ],
+          0
+        )
+      ),
+
+    current_signal_class_v1:
       getField(
         row,
         [
-          "final_opportunity_score_v3",
-          "final_score",
-          "score",
+          "current_signal_class_v1",
+          "current_signal_class_v3",
         ],
-        0
-      )
-    ),
+        "NO SIGNAL"
+      ),
 
-    historical_opportunity_v3: toNumber(
-      getField(
-        row,
-        ["historical_opportunity_v3"],
-        0
-      )
-    ),
-
-    historical_evidence_strength_v3: toNumber(
-      getField(
-        row,
-        ["historical_evidence_strength_v3"],
-        0
-      )
-    ),
-
-    historical_evidence_coverage_v3: toNumber(
-      getField(
-        row,
-        ["historical_evidence_coverage_v3"],
-        0
-      )
-    ),
-
-    current_signal_class_v1: getField(
-      row,
-      [
-        "current_signal_class_v1",
-        "current_signal_class_v3",
-      ],
-      "NO SIGNAL"
-    ),
-
-    current_world_relevance_v3: toNumber(
-      getField(
-        row,
-        ["current_world_relevance_v3"],
-        0
-      )
-    ),
+    current_world_relevance_v3:
+      toNumber(
+        getField(
+          row,
+          [
+            "current_world_relevance_v3",
+          ],
+          0
+        )
+      ),
 
     decision_v3: getField(
       row,
@@ -241,45 +287,66 @@ function normalizeRecommendation(row, index) {
       String(
         getField(
           row,
-          ["manual_review_required_v1"],
+          [
+            "manual_review_required_v1",
+          ],
           "false"
         )
       ).toLowerCase() === "true",
 
-    production_readiness_v1: getField(
-      row,
-      ["production_readiness_v1"],
-      "REVIEW"
-    ),
+    production_readiness_v1:
+      getField(
+        row,
+        [
+          "production_readiness_v1",
+        ],
+        "REVIEW"
+      ),
 
     hook_v1: getField(
       row,
-      ["hook_v1", "hook", "title"],
+      [
+        "hook_v1",
+        "hook",
+        "title",
+      ],
       "Untitled recommendation"
     ),
 
     caption_v1: getField(
       row,
-      ["caption_v1", "caption"],
+      [
+        "caption_v1",
+        "caption",
+      ],
       ""
     ),
 
     cta_v1: getField(
       row,
-      ["cta_v1", "cta"],
-      ""
-    ),
-
-    creative_direction_v1: getField(
-      row,
       [
-        "creative_direction_v1",
-        "creative_direction",
+        "cta_v1",
+        "cta",
       ],
       ""
     ),
+
+    creative_direction_v1:
+      getField(
+        row,
+        [
+          "creative_direction_v1",
+          "creative_direction",
+        ],
+        ""
+      ),
   };
 }
+
+
+/* ==========================================================================
+   DASHBOARD
+   ========================================================================== */
 
 function Dashboard({
   recommendations,
@@ -301,11 +368,15 @@ function Dashboard({
   );
 
   const themes = new Set(
-    recommendations.map((item) => item.theme)
+    recommendations.map(
+      (item) => item.theme
+    )
   );
 
   const platforms = new Set(
-    recommendations.map((item) => item.platform)
+    recommendations.map(
+      (item) => item.platform
+    )
   );
 
   const averageScore =
@@ -314,7 +385,8 @@ function Dashboard({
           (sum, item) =>
             sum +
             Number(
-              item.final_opportunity_score_v3 || 0
+              item.final_opportunity_score_v3 ||
+                0
             ),
           0
         ) / recommendations.length
@@ -325,9 +397,25 @@ function Dashboard({
     .filter(Boolean)
     .sort();
 
-  const startDate = dates[0] || "—";
+  const startDate =
+    dates[0] || "—";
+
   const endDate =
     dates[dates.length - 1] || "—";
+
+  const evidenceCoverage =
+    recommendations.length > 0
+      ? recommendations.reduce(
+          (sum, item) =>
+            sum +
+            Number(
+              item
+                .historical_evidence_coverage_v3 ||
+                0
+            ),
+          0
+        ) / recommendations.length
+      : 0;
 
   return (
     <>
@@ -337,11 +425,13 @@ function Dashboard({
             ZUVA SOCIAL INTELLIGENCE
           </div>
 
-          <h1>Good morning, Zuva.</h1>
+          <h1>
+            Good morning, Zuva.
+          </h1>
 
           <p>
-            Your current social intelligence portfolio
-            is ready for review.
+            Your current social intelligence
+            portfolio is ready for review.
           </p>
 
           <div className="date-range">
@@ -353,7 +443,9 @@ function Dashboard({
           <button
             type="button"
             className="secondary-button"
-            onClick={() => onNavigate("calendar")}
+            onClick={() =>
+              onNavigate("calendar")
+            }
           >
             Weekly calendar
           </button>
@@ -361,7 +453,9 @@ function Dashboard({
           <button
             type="button"
             className="primary-button"
-            onClick={() => onNavigate("approval")}
+            onClick={() =>
+              onNavigate("approval")
+            }
           >
             Review portfolio
           </button>
@@ -380,21 +474,21 @@ function Dashboard({
           label="Average opportunity"
           value={averageScore.toFixed(2)}
           description="Final opportunity score"
-          accent="teal"
+          accent="plum"
         />
 
         <MetricCard
           label="Themes"
           value={themes.size}
           description="Strategic diversity"
-          accent="yellow"
+          accent="plum"
         />
 
         <MetricCard
           label="Platforms"
           value={platforms.size}
           description="Active publishing channels"
-          accent="terracotta"
+          accent="plum"
         />
       </div>
 
@@ -407,30 +501,35 @@ function Dashboard({
               </h2>
 
               <p className="section-subtitle">
-                Highest opportunity recommendations
+                Highest opportunity
+                recommendations
               </p>
             </div>
 
             <button
               type="button"
               className="view-all"
-              onClick={() => onNavigate("calendar")}
+              onClick={() =>
+                onNavigate("calendar")
+              }
             >
               View all
             </button>
           </div>
 
           <div className="recommendations-grid">
-            {sorted.slice(0, 6).map((item) => (
-              <RecommendationCard
-                key={
-                  item.production_id_v1 ||
-                  item.recommendation_rank_v1
-                }
-                recommendation={item}
-                onOpen={onOpen}
-              />
-            ))}
+            {sorted
+              .slice(0, 6)
+              .map((item) => (
+                <RecommendationCard
+                  key={
+                    item.production_id_v1 ||
+                    item.recommendation_rank_v1
+                  }
+                  recommendation={item}
+                  onOpen={onOpen}
+                />
+              ))}
           </div>
         </section>
 
@@ -444,11 +543,14 @@ function Dashboard({
               INTELLIGENCE
             </div>
 
-            <h2>Ask anything.</h2>
+            <h2>
+              Ask anything.
+            </h2>
 
             <p>
-              Ask about content, trends, evidence,
-              recommendations, platforms or strategy.
+              Ask about content, trends,
+              evidence, recommendations,
+              platforms or strategy.
             </p>
 
             <button
@@ -476,28 +578,15 @@ function Dashboard({
             </div>
 
             <div className="health-number">
-              {recommendations.length
-                ? Math.round(
-                    (recommendations.reduce(
-                      (sum, item) =>
-                        sum +
-                        Number(
-                          item
-                            .historical_evidence_coverage_v3 ||
-                            0
-                        ),
-                      0
-                    ) /
-                      recommendations.length) *
-                      100
-                  )
-                : 0}
+              {Math.round(
+                evidenceCoverage * 100
+              )}
               %
             </div>
 
             <p className="health-copy">
-              Historical evidence coverage across the
-              current portfolio.
+              Historical evidence coverage
+              across the current portfolio.
             </p>
           </section>
         </aside>
@@ -506,16 +595,24 @@ function Dashboard({
   );
 }
 
+
+/* ==========================================================================
+   APPROVAL
+   ========================================================================== */
+
 function ApprovalPage({
   recommendations,
   onOpen,
 }) {
-  const reviewItems = recommendations.filter(
-    (item) =>
-      item.manual_review_required_v1 ||
-      String(item.qa_status).toUpperCase() ===
-        "NEEDS_REVIEW"
-  );
+  const reviewItems =
+    recommendations.filter(
+      (item) =>
+        item.manual_review_required_v1 ||
+        String(
+          item.qa_status
+        ).toUpperCase() ===
+          "NEEDS_REVIEW"
+    );
 
   return (
     <div className="page-header">
@@ -523,16 +620,23 @@ function ApprovalPage({
         HUMAN APPROVAL
       </div>
 
-      <h1>Review portfolio</h1>
+      <h1>
+        Review portfolio
+      </h1>
 
       <p>
-        Review recommendations that require human
-        approval before publishing.
+        Review recommendations that require
+        human approval before publishing.
       </p>
 
       <div className="approval-summary">
-        <strong>{reviewItems.length}</strong>
-        <span>items requiring review</span>
+        <strong>
+          {reviewItems.length}
+        </strong>
+
+        <span>
+          items requiring review
+        </span>
       </div>
 
       <div className="approval-list">
@@ -544,33 +648,46 @@ function ApprovalPage({
               item.production_id_v1 ||
               item.recommendation_rank_v1
             }
-            onClick={() => onOpen(item)}
+            onClick={() =>
+              onOpen(item)
+            }
           >
             <span className="approval-rank">
-              #{item.recommendation_rank_v1}
+              #
+              {
+                item.recommendation_rank_v1
+              }
             </span>
 
             <span className="approval-content">
-              <strong>{item.hook_v1}</strong>
+              <strong>
+                {item.hook_v1}
+              </strong>
 
               <small>
-                {item.theme} · {item.platform} ·{" "}
+                {item.theme} ·{" "}
+                {item.platform} ·{" "}
                 {item.content_type}
               </small>
             </span>
 
             <span className="approval-status">
-              {item.qa_status || "REVIEW"}
+              {item.qa_status ||
+                "REVIEW"}
             </span>
           </button>
         ))}
 
         {reviewItems.length === 0 && (
           <div className="empty-state">
-            <h3>Nothing needs review.</h3>
+            <h3>
+              Nothing needs review.
+            </h3>
+
             <p>
-              All currently loaded recommendations have
-              passed the review gate.
+              All currently loaded
+              recommendations have passed
+              the review gate.
             </p>
           </div>
         )}
@@ -579,48 +696,73 @@ function ApprovalPage({
   );
 }
 
+
+/* ==========================================================================
+   APP
+   ========================================================================== */
+
 export default function App() {
-  const [recommendations, setRecommendations] =
-    useState(() => createRemainingRecommendations());
+  const [
+    recommendations,
+    setRecommendations,
+  ] = useState(() =>
+    createRemainingRecommendations()
+  );
 
-  const [activePage, setActivePage] =
-    useState("dashboard");
+  const [
+    activePage,
+    setActivePage,
+  ] = useState("dashboard");
 
-  const [selectedRecommendation, setSelectedRecommendation] =
-    useState(null);
+  const [
+    selectedRecommendation,
+    setSelectedRecommendation,
+  ] = useState(null);
 
-  const [search, setSearch] = useState("");
+  const [
+    search,
+    setSearch,
+  ] = useState("");
 
-  const filteredRecommendations = useMemo(() => {
-    const query = search.trim().toLowerCase();
 
-    if (!query) {
-      return recommendations;
-    }
+  const filteredRecommendations =
+    useMemo(() => {
+      const query =
+        search.trim().toLowerCase();
 
-    return recommendations.filter((item) =>
-      [
-        item.theme,
-        item.platform,
-        item.content_type,
-        item.day,
-        item.date,
-        item.hook_v1,
-        item.caption_v1,
-        item.current_signal_class_v1,
-        item.production_readiness_v1,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(query)
-    );
-  }, [recommendations, search]);
+      if (!query) {
+        return recommendations;
+      }
+
+      return recommendations.filter(
+        (item) =>
+          [
+            item.theme,
+            item.platform,
+            item.content_type,
+            item.day,
+            item.date,
+            item.hook_v1,
+            item.caption_v1,
+            item.current_signal_class_v1,
+            item.production_readiness_v1,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase()
+            .includes(query)
+      );
+    }, [
+      recommendations,
+      search,
+    ]);
+
 
   function openRecommendation(item) {
     setSelectedRecommendation(item);
     setActivePage("detail");
   }
+
 
   function handleNavigate(page) {
     setActivePage(page);
@@ -630,31 +772,46 @@ export default function App() {
     }
   }
 
+
   async function handleUpload(event) {
-    const file = event.target.files?.[0];
+    const file =
+      event.target.files?.[0];
 
     if (!file) {
       return;
     }
 
     try {
-      const text = await file.text();
-      const rows = parseCSV(text);
+      const text =
+        await file.text();
+
+      const rows =
+        parseCSV(text);
 
       if (!rows.length) {
         window.alert(
           "The CSV file does not contain usable rows."
         );
+
         return;
       }
 
-      const normalized = rows.map(
-        normalizeRecommendation
+      const normalized =
+        rows.map(
+          normalizeRecommendation
+        );
+
+      setRecommendations(
+        normalized
       );
 
-      setRecommendations(normalized);
-      setSelectedRecommendation(null);
-      setActivePage("dashboard");
+      setSelectedRecommendation(
+        null
+      );
+
+      setActivePage(
+        "dashboard"
+      );
 
       window.alert(
         `Loaded ${normalized.length} recommendations from the Cell 83 CSV.`
@@ -670,78 +827,131 @@ export default function App() {
     event.target.value = "";
   }
 
+
   let pageContent;
+
 
   if (activePage === "dashboard") {
     pageContent = (
       <Dashboard
-        recommendations={filteredRecommendations}
-        onOpen={openRecommendation}
-        onNavigate={handleNavigate}
-      />
-    );
-  } else if (activePage === "calendar") {
-    pageContent = (
-      <div className="page-header">
-        <div className="page-kicker">
-          PLANNING WINDOW
-        </div>
-
-        <h1>Weekly calendar</h1>
-
-        <p>
-          Current recommendations arranged across the
-          publishing week.
-        </p>
-
-        <CalendarView
-          recommendations={filteredRecommendations}
-          onOpen={openRecommendation}
-        />
-      </div>
-    );
-  } else if (activePage === "intelligence") {
-    pageContent = (
-      <IntelligenceChat
-        recommendations={recommendations}
-      />
-    );
-  } else if (activePage === "approval") {
-    pageContent = (
-      <ApprovalPage
-        recommendations={filteredRecommendations}
-        onOpen={openRecommendation}
-      />
-    );
-  } else if (activePage === "detail") {
-    pageContent = (
-      <PostDetail
-        recommendation={selectedRecommendation}
-        onBack={() => handleNavigate("dashboard")}
+        recommendations={
+          filteredRecommendations
+        }
+        onOpen={
+          openRecommendation
+        }
+        onNavigate={
+          handleNavigate
+        }
       />
     );
   }
 
+
+  /*
+   * IMPORTANT:
+   *
+   * CalendarView already owns its complete
+   * page header and calendar layout.
+   *
+   * Therefore we do NOT wrap it in another
+   * .page-header.
+   */
+  else if (
+    activePage === "calendar"
+  ) {
+    pageContent = (
+      <CalendarView
+        recommendations={
+          filteredRecommendations
+        }
+        onSelectPost={
+          openRecommendation
+        }
+      />
+    );
+  }
+
+
+  else if (
+    activePage === "intelligence"
+  ) {
+    pageContent = (
+      <IntelligenceChat
+        recommendations={
+          recommendations
+        }
+      />
+    );
+  }
+
+
+  else if (
+    activePage === "approval"
+  ) {
+    pageContent = (
+      <ApprovalPage
+        recommendations={
+          filteredRecommendations
+        }
+        onOpen={
+          openRecommendation
+        }
+      />
+    );
+  }
+
+
+  else if (
+    activePage === "detail"
+  ) {
+    pageContent = (
+      <PostDetail
+        recommendation={
+          selectedRecommendation
+        }
+        onBack={() =>
+          handleNavigate(
+            "dashboard"
+          )
+        }
+      />
+    );
+  }
+
+
   return (
     <div className="app-shell">
       <Sidebar
-        activePage={activePage}
-        onNavigate={handleNavigate}
+        activePage={
+          activePage
+        }
+        onNavigate={
+          handleNavigate
+        }
       />
 
       <div className="main-area">
         <Topbar
           search={search}
-          onSearchChange={setSearch}
-          onUpload={handleUpload}
+          onSearchChange={
+            setSearch
+          }
+          onUpload={
+            handleUpload
+          }
           title={
-            activePage === "intelligence"
+            activePage ===
+            "intelligence"
               ? "Ask Intelligence"
-              : activePage === "calendar"
+              : activePage ===
+                  "calendar"
                 ? "Weekly Calendar"
-                : activePage === "approval"
+                : activePage ===
+                    "approval"
                   ? "Approval"
-                  : activePage === "detail"
+                  : activePage ===
+                      "detail"
                     ? "Recommendation"
                     : "Social Intelligence"
           }
