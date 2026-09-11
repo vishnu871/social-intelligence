@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap");
 
-
 /* ==========================================================================
-   ZUVA DESIGN TOKENS
+   ZUVA SOCIAL INTELLIGENCE
+   GLOBAL DESIGN SYSTEM
    ========================================================================== */
 
 :root {
@@ -15,14 +15,14 @@
   --white: #FFFFFF;
 
   --shadow:
-    0 10px 28px rgba(87, 21, 65, 0.08);
+    0 10px 30px rgba(87, 21, 65, 0.08);
 
   --shadow-hover:
-    0 16px 36px rgba(87, 21, 65, 0.12);
+    0 16px 38px rgba(87, 21, 65, 0.13);
 
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 11px;
+  --radius-large: 20px;
+  --radius-medium: 15px;
+  --radius-small: 11px;
 
   --heading-font: "Poppins", sans-serif;
   --body-font: "Inter", sans-serif;
@@ -37,17 +37,19 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html {
   width: 100%;
-  min-width: 320px;
   min-height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+
+  margin: 0;
+  padding: 0;
+
   background: var(--ecru);
   color: var(--text);
 
@@ -57,17 +59,26 @@ body {
   line-height: 1.5;
 
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
+body,
 button,
 input,
 textarea,
 select {
-  font-family: inherit;
+  font-family: var(--body-font);
 }
 
 button {
+  margin: 0;
   border: 0;
+  outline: 0;
+}
+
+input,
+textarea {
+  outline: 0;
 }
 
 button:focus-visible,
@@ -75,6 +86,39 @@ input:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+
+/* ==========================================================================
+   GLOBAL TYPOGRAPHY
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+
+  color: var(--plum);
+
+  font-family: var(--heading-font);
+}
+
+p {
+  color: var(--text);
+}
+
+span,
+small,
+label {
+  color: var(--text);
 }
 
 
@@ -102,6 +146,7 @@ textarea:focus-visible {
 
 .page-content {
   flex: 1;
+
   min-width: 0;
 }
 
@@ -126,7 +171,14 @@ textarea:focus-visible {
   background: var(--plum);
 
   color: var(--white);
+
+  overflow-y: auto;
 }
+
+
+/* --------------------------------------------------------------------------
+   Sidebar Brand
+   -------------------------------------------------------------------------- */
 
 .sidebar-brand {
   display: flex;
@@ -144,6 +196,7 @@ textarea:focus-visible {
 
   width: 56px;
   height: 56px;
+
   flex-shrink: 0;
 
   border-radius: 15px;
@@ -155,6 +208,7 @@ textarea:focus-visible {
   font-family: var(--heading-font);
   font-size: 29px;
   font-weight: 700;
+  line-height: 1;
 }
 
 .sidebar-brand-copy {
@@ -181,6 +235,11 @@ textarea:focus-visible {
   line-height: 1.3;
 }
 
+
+/* --------------------------------------------------------------------------
+   Sidebar Section
+   -------------------------------------------------------------------------- */
+
 .sidebar-section-label {
   margin: 0 10px 12px;
 
@@ -189,7 +248,13 @@ textarea:focus-visible {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.16em;
+  line-height: 1.3;
 }
+
+
+/* --------------------------------------------------------------------------
+   Sidebar Navigation
+   -------------------------------------------------------------------------- */
 
 .sidebar-nav {
   display: flex;
@@ -215,8 +280,10 @@ textarea:focus-visible {
 
   color: var(--white);
 
+  font-family: var(--body-font);
   font-size: 14px;
   font-weight: 600;
+  line-height: 1;
 
   text-align: left;
 
@@ -224,30 +291,84 @@ textarea:focus-visible {
 
   transition:
     background 160ms ease,
-    color 160ms ease;
+    color 160ms ease,
+    transform 160ms ease;
 }
 
-.sidebar-nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
 
-.sidebar-nav-item.active {
-  background: var(--gold);
-  color: var(--plum);
+/* IMPORTANT:
+   Explicitly override the global span color rule.
+*/
+
+.sidebar-nav-item span {
+  color: var(--white);
+
+  font-family: var(--body-font);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .sidebar-nav-item svg {
   flex-shrink: 0;
+
+  color: var(--white);
 }
 
-.sidebar-bottom {
-  margin-top: auto;
+
+/* Hover */
+
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+
+  color: var(--white);
 }
+
+.sidebar-nav-item:hover span {
+  color: var(--white);
+}
+
+.sidebar-nav-item:hover svg {
+  color: var(--white);
+}
+
+
+/* Active */
+
+.sidebar-nav-item.active {
+  background: var(--gold);
+
+  color: var(--plum);
+}
+
+.sidebar-nav-item.active span {
+  color: var(--plum);
+}
+
+.sidebar-nav-item.active svg {
+  color: var(--plum);
+}
+
+
+/* Secondary */
 
 .sidebar-secondary {
   display: flex;
   flex-direction: column;
+
   gap: 7px;
+}
+
+.sidebar-secondary-item {
+  background: transparent;
+}
+
+
+/* --------------------------------------------------------------------------
+   Sidebar Status
+   -------------------------------------------------------------------------- */
+
+.sidebar-bottom {
+  margin-top: auto;
 }
 
 .sidebar-status {
@@ -264,9 +385,17 @@ textarea:focus-visible {
   font-weight: 600;
 }
 
+.sidebar-status-text {
+  color: var(--white);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .sidebar-status-dot {
   width: 8px;
   height: 8px;
+
   flex-shrink: 0;
 
   border-radius: 50%;
@@ -280,6 +409,7 @@ textarea:focus-visible {
   color: rgba(255, 255, 255, 0.55);
 
   font-size: 11px;
+  line-height: 1.4;
 }
 
 
@@ -288,6 +418,9 @@ textarea:focus-visible {
    ========================================================================== */
 
 .topbar {
+  position: sticky;
+  top: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -316,6 +449,7 @@ textarea:focus-visible {
   font-family: var(--heading-font);
   font-size: 19px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .topbar-actions {
@@ -324,6 +458,11 @@ textarea:focus-visible {
 
   gap: 10px;
 }
+
+
+/* --------------------------------------------------------------------------
+   Search
+   -------------------------------------------------------------------------- */
 
 .topbar-search {
   position: relative;
@@ -348,7 +487,6 @@ textarea:focus-visible {
   padding: 0 14px 0 40px;
 
   border: 0;
-  outline: 0;
   border-radius: 11px;
 
   background: var(--ecru);
@@ -356,12 +494,18 @@ textarea:focus-visible {
   color: var(--text);
 
   font-size: 13px;
+  font-weight: 400;
 }
 
 .topbar-search input::placeholder {
   color: var(--text);
   opacity: 0.68;
 }
+
+
+/* --------------------------------------------------------------------------
+   Upload
+   -------------------------------------------------------------------------- */
 
 .hidden-file-input {
   display: none;
@@ -388,11 +532,26 @@ textarea:focus-visible {
   font-weight: 700;
 
   cursor: pointer;
+
+  transition:
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.topbar-upload svg {
+  color: var(--plum);
 }
 
 .topbar-upload:hover {
+  transform: translateY(-1px);
+
   box-shadow: var(--shadow);
 }
+
+
+/* --------------------------------------------------------------------------
+   Topbar Icon
+   -------------------------------------------------------------------------- */
 
 .topbar-icon-button {
   display: flex;
@@ -401,6 +560,8 @@ textarea:focus-visible {
 
   width: 42px;
   height: 42px;
+
+  padding: 0;
 
   border-radius: 11px;
 
@@ -411,6 +572,15 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
+.topbar-icon-button svg {
+  color: var(--text);
+}
+
+
+/* --------------------------------------------------------------------------
+   Avatar
+   -------------------------------------------------------------------------- */
+
 .topbar-avatar {
   display: flex;
   align-items: center;
@@ -418,6 +588,8 @@ textarea:focus-visible {
 
   width: 40px;
   height: 40px;
+
+  flex-shrink: 0;
 
   border-radius: 50%;
 
@@ -432,86 +604,7 @@ textarea:focus-visible {
 
 
 /* ==========================================================================
-   GLOBAL TYPOGRAPHY
-   ========================================================================== */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--plum);
-
-  font-family: var(--heading-font);
-}
-
-p,
-span,
-small,
-label {
-  color: var(--text);
-}
-
-.page-kicker,
-.section-eyebrow {
-  color: var(--text);
-
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.17em;
-}
-
-
-/* ==========================================================================
-   DASHBOARD
-   ========================================================================== */
-
-.dashboard-hero {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-
-  gap: 30px;
-
-  padding: 44px 44px 28px;
-}
-
-.dashboard-hero h1 {
-  margin: 9px 0 0;
-
-  font-size: clamp(36px, 3.5vw, 50px);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-}
-
-.dashboard-hero p {
-  margin: 12px 0 0;
-
-  color: var(--text);
-
-  font-size: 17px;
-  line-height: 1.6;
-}
-
-.date-range {
-  margin-top: 13px;
-
-  color: var(--text);
-
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 10px;
-}
-
-
-/* ==========================================================================
-   BUTTONS
+   GLOBAL BUTTONS
    ========================================================================== */
 
 .primary-button,
@@ -540,24 +633,86 @@ label {
 
 .primary-button {
   background: var(--gold);
+
+  color: var(--plum);
+}
+
+.primary-button svg {
   color: var(--plum);
 }
 
 .secondary-button {
   background: var(--white);
+
   color: var(--plum);
 
   box-shadow: var(--shadow);
 }
 
+.secondary-button svg {
+  color: var(--plum);
+}
+
 .primary-button:hover,
 .secondary-button:hover {
   transform: translateY(-1px);
+
   box-shadow: var(--shadow-hover);
 }
 
 .full-button {
   width: 100%;
+}
+
+
+/* ==========================================================================
+   DASHBOARD HERO
+   ========================================================================== */
+
+.dashboard-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding: 44px 44px 28px;
+}
+
+.dashboard-hero h1 {
+  margin: 9px 0 0;
+
+  color: var(--plum);
+
+  font-family: var(--heading-font);
+  font-size: clamp(36px, 3.5vw, 50px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.dashboard-hero p {
+  margin: 12px 0 0;
+
+  color: var(--text);
+
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.date-range {
+  margin-top: 13px;
+
+  color: var(--text);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hero-actions {
+  display: flex;
+
+  gap: 10px;
 }
 
 
@@ -581,7 +736,7 @@ label {
 
   padding: 22px;
 
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-medium);
 
   background: var(--white);
 
@@ -638,6 +793,10 @@ label {
   margin-bottom: 17px;
 }
 
+.section-header.compact {
+  margin-bottom: 0;
+}
+
 .section-title {
   margin: 0;
 
@@ -646,6 +805,7 @@ label {
   font-family: var(--heading-font);
   font-size: 20px;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .section-subtitle {
@@ -694,7 +854,7 @@ label {
 
   padding: 20px;
 
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-medium);
 
   background: var(--white);
 
@@ -755,6 +915,7 @@ label {
 
 .recommendation-meta {
   display: flex;
+
   gap: 6px;
 
   margin-top: 13px;
@@ -819,7 +980,7 @@ label {
 .intelligence-promo {
   padding: 25px;
 
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-large);
 
   background: var(--plum);
 
@@ -858,6 +1019,7 @@ label {
 
   font-family: var(--heading-font);
   font-size: 28px;
+  line-height: 1.2;
 }
 
 .intelligence-promo p {
@@ -870,10 +1032,14 @@ label {
   opacity: 0.88;
 }
 
+.intelligence-promo .primary-button {
+  color: var(--plum);
+}
+
 .health-section {
   padding: 23px;
 
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-large);
 
   background: var(--white);
 
@@ -900,7 +1066,7 @@ label {
 
 
 /* ==========================================================================
-   GENERIC PAGE
+   GENERIC PAGE HEADER
    ========================================================================== */
 
 .page-header {
@@ -910,8 +1076,13 @@ label {
 .page-header h1 {
   margin: 9px 0 0;
 
+  color: var(--plum);
+
+  font-family: var(--heading-font);
   font-size: clamp(34px, 3vw, 46px);
+  font-weight: 700;
   letter-spacing: -0.035em;
+  line-height: 1.12;
 }
 
 .page-header > p {
@@ -955,6 +1126,7 @@ label {
   font-size: clamp(36px, 3.2vw, 48px);
   font-weight: 700;
   letter-spacing: -0.035em;
+  line-height: 1.1;
 }
 
 .weekly-calendar-header p {
@@ -994,6 +1166,7 @@ label {
 
   font-family: var(--heading-font);
   font-size: 19px;
+  line-height: 1.2;
 }
 
 .weekly-calendar-summary-item span {
@@ -1066,6 +1239,7 @@ label {
   font-family: var(--heading-font);
   font-size: 16px;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .weekly-calendar-day-header span {
@@ -1156,6 +1330,7 @@ label {
 
 .weekly-calendar-detail svg {
   color: var(--text);
+
   flex-shrink: 0;
 }
 
@@ -1336,6 +1511,10 @@ label {
   cursor: pointer;
 }
 
+.back-button svg {
+  color: var(--plum);
+}
+
 .post-detail-header {
   display: flex;
   align-items: flex-end;
@@ -1442,6 +1621,10 @@ label {
   font-size: 14px;
 }
 
+.post-detail-meta strong svg {
+  color: var(--plum);
+}
+
 .post-detail-grid {
   display: grid;
 
@@ -1526,6 +1709,7 @@ label {
 
   font-family: var(--heading-font);
   font-size: 42px;
+  line-height: 1.15;
 }
 
 .intelligence-header p {
@@ -1573,6 +1757,7 @@ label {
 
 .chat-message.user {
   margin-left: auto;
+
   justify-content: flex-end;
 }
 
@@ -1583,12 +1768,17 @@ label {
 
   width: 30px;
   height: 30px;
+
   flex-shrink: 0;
 
   border-radius: 9px;
 
   background: var(--gold);
 
+  color: var(--plum);
+}
+
+.chat-message-icon svg {
   color: var(--plum);
 }
 
@@ -1606,14 +1796,9 @@ label {
 }
 
 .chat-message.user
-  .chat-message-content {
+.chat-message-content {
   background: var(--plum);
 
-  color: var(--white);
-}
-
-.chat-message.user
-  .chat-message-content {
   color: var(--white);
 }
 
@@ -1635,7 +1820,6 @@ label {
   padding: 13px 15px;
 
   border: 0;
-  outline: 0;
   border-radius: 11px;
 
   background: var(--ecru);
@@ -1649,6 +1833,7 @@ label {
 
 .chat-input::placeholder {
   color: var(--text);
+
   opacity: 0.65;
 }
 
@@ -1702,6 +1887,7 @@ label {
   }
 }
 
+
 @media (max-width: 1100px) {
   .metrics-grid {
     grid-template-columns:
@@ -1729,6 +1915,7 @@ label {
   }
 }
 
+
 @media (max-width: 900px) {
   .sidebar {
     width: 78px;
@@ -1740,8 +1927,8 @@ label {
   .sidebar-brand {
     justify-content: center;
 
-    padding-left: 0;
     padding-right: 0;
+    padding-left: 0;
   }
 
   .sidebar-brand-copy,
@@ -1755,17 +1942,19 @@ label {
   .sidebar-nav-item {
     justify-content: center;
 
-    padding-left: 0;
     padding-right: 0;
+    padding-left: 0;
   }
 
   .dashboard-hero {
     align-items: flex-start;
+
     flex-direction: column;
   }
 
   .weekly-calendar-header {
     align-items: flex-start;
+
     flex-direction: column;
   }
 
@@ -1790,6 +1979,7 @@ label {
   }
 }
 
+
 @media (max-width: 700px) {
   .metrics-grid {
     grid-template-columns: 1fr;
@@ -1801,8 +1991,8 @@ label {
   .page-header,
   .post-detail,
   .intelligence-page {
-    padding-left: 20px;
     padding-right: 20px;
+    padding-left: 20px;
   }
 
   .dashboard-aside {
@@ -1827,6 +2017,7 @@ label {
 
   .post-detail-header {
     align-items: flex-start;
+
     flex-direction: column;
   }
 
@@ -1842,6 +2033,7 @@ label {
     display: none;
   }
 }
+
 
 @media (max-width: 500px) {
   .topbar {
@@ -1862,6 +2054,7 @@ label {
 
   .topbar-upload {
     width: 42px;
+
     padding: 0;
   }
 
@@ -1872,6 +2065,7 @@ label {
 
   .weekly-calendar-summary {
     align-items: flex-start;
+
     flex-direction: column;
   }
 

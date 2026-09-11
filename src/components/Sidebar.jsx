@@ -37,8 +37,11 @@ export default function Sidebar({
 }) {
   return (
     <aside className="sidebar">
+      {/* BRAND */}
       <div className="sidebar-brand">
-        <div className="sidebar-logo">Z</div>
+        <div className="sidebar-logo">
+          Z
+        </div>
 
         <div className="sidebar-brand-copy">
           <div className="sidebar-brand-title">
@@ -51,6 +54,7 @@ export default function Sidebar({
         </div>
       </div>
 
+      {/* WORKSPACE */}
       <div className="sidebar-section-label">
         WORKSPACE
       </div>
@@ -78,6 +82,7 @@ export default function Sidebar({
               <Icon
                 size={19}
                 strokeWidth={1.9}
+                aria-hidden="true"
               />
 
               <span>
@@ -88,15 +93,17 @@ export default function Sidebar({
         })}
       </nav>
 
+      {/* SIDEBAR SECONDARY */}
       <div className="sidebar-bottom">
         <div className="sidebar-secondary">
           <button
             type="button"
-            className="sidebar-nav-item"
+            className="sidebar-nav-item sidebar-secondary-item"
           >
             <Sparkles
               size={19}
               strokeWidth={1.9}
+              aria-hidden="true"
             />
 
             <span>
@@ -106,11 +113,12 @@ export default function Sidebar({
 
           <button
             type="button"
-            className="sidebar-nav-item"
+            className="sidebar-nav-item sidebar-secondary-item"
           >
             <Settings
               size={19}
               strokeWidth={1.9}
+              aria-hidden="true"
             />
 
             <span>
@@ -119,10 +127,11 @@ export default function Sidebar({
           </button>
         </div>
 
+        {/* ENGINE STATUS */}
         <div className="sidebar-status">
           <span className="sidebar-status-dot" />
 
-          <span>
+          <span className="sidebar-status-text">
             Engine connected
           </span>
         </div>
