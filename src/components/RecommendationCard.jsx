@@ -1,181 +1,91 @@
+import React from "react";
 import {
   ArrowUpRight,
   CalendarDays,
   Clock3,
-  Image,
-  MessageSquare,
-  Video,
+  Image as ImageIcon,
 } from "lucide-react";
 
-function getPlatformIcon(platform) {
-  const value = String(platform || "").toLowerCase();
-
-  if (value.includes("instagram")) {
-    return Image;
-  }
-
-  if (value.includes("linkedin")) {
-    return MessageSquare;
-  }
-
-  return CalendarDays;
-}
-
-function formatHour(hour) {
-  if (hour === null || hour === undefined || hour === "") {
-    return "—";
-  }
-
-  const numericHour = Number(hour);
-
-  if (Number.isNaN(numericHour)) {
-    return String(hour);
-  }
-
-  const normalized = ((numericHour % 24) + 24) % 24;
-  const suffix = normalized >= 12 ? "PM" : "AM";
-  const displayHour = normalized % 12 || 12;
-
-  return `${displayHour}:00 ${suffix}`;
-}
-
-function getSignalClass(signal) {
-  const value = String(signal || "").toLowerCase();
-
-  if (
-    value.includes("positive") ||
-    value.includes("strong") ||
-    value.includes("opportunity")
-  ) {
-    return "signal-positive";
-  }
-
-  if (
-    value.includes("watch") ||
-    value.includes("moderate")
-  ) {
-    return "signal-watch";
-  }
-
-  return "signal-neutral";
+function getPlatformShortName(platform) {
+  return platform || "Platform";
 }
 
 export default function RecommendationCard({
-  recommendation = null,
-  onOpen = () => {},
+  recommendation,
+  onOpen,
 }) {
-  /*
-   * Defensive guard:
-   * The dashboard should never crash if a recommendation
-   * is temporarily missing or undefined.
-   */
   if (!recommendation) {
     return null;
   }
 
-  const PlatformIcon = getPlatformIcon(
-    recommendation.platform
-  );
-
-  const contentType = String(
-    recommendation.content_type || "Content"
-  );
-
-  const contentTypeLower = contentType.toLowerCase();
-
-  const FormatIcon =
-    contentTypeLower.includes("reel") ||
-    contentTypeLower.includes("video")
-      ? Video
-      : contentTypeLower.includes("image") ||
-          contentTypeLower.includes("carousel")
-        ? Image
-        : MessageSquare;
-
   const score = Number(
-    recommendation.final_opportunity_score_v3
+    recommendation.final_opportunity_score_v3 || 0
   );
 
   return (
-    <article className="recommendation-card">
-      <div className="recommendation-card-header">
-        <div className="rank-label">
-          Rank #
-          {recommendation.recommendation_rank_v1 ?? "—"}
+    <article
+      className="recommendation-card"
+      onClick={() => onOpen(recommendation)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen(recommendation);
+        }
+      }}
+    >
+      <div className="recommendation-rank">
+        #{recommendation.recommendation_rank_v1}
+      </div>
+
+      <div className="recommendation-content">
+        <div className="recommendation-theme">
+          {recommendation.theme}
         </div>
 
-        <div className="score-pill">
-          {Number.isFinite(score)
-            ? score.toFixed(2)
-            : "—"}
-        </div>
-      </div>
+        <h3 className="recommendation-title">
+          {recommendation.hook_v1 || "Untitled recommendation"}
+        </h3>
 
-      <div className="recommendation-theme">
-        {recommendation.theme || "Unclassified"}
-      </div>
-
-      <div className="recommendation-hook">
-        {recommendation.hook_v1 ||
-          "No hook available."}
-      </div>
-
-      <div className="recommendation-card-footer">
         <div className="recommendation-meta">
-          <PlatformIcon
-            size={14}
-            strokeWidth={1.8}
-          />
+          <span>
+            {getPlatformShortName(recommendation.platform)}
+          </span>
+
+          <span className="meta-separator">·</span>
 
           <span>
-            {recommendation.platform || "—"}
+            <Clock3 size={13} />
+            {Number(recommendation.hour) || 0}:00
           </span>
 
-          <span className="meta-divider">
-            •
-          </span>
-
-          <Clock3
-            size={13}
-            strokeWidth={1.8}
-          />
+          <span className="meta-separator">·</span>
 
           <span>
-            {formatHour(recommendation.hour)}
+            <ImageIcon size={13} />
+            {recommendation.content_type || "Content"}
           </span>
 
-          <span className="meta-divider">
-            •
-          </span>
+          {recommendation.current_signal_class_v1 && (
+            <>
+              <span className="meta-separator">·</span>
 
-          <FormatIcon
-            size={13}
-            strokeWidth={1.8}
-          />
-
-          <span>{contentType}</span>
+              <span className="signal-text">
+                {recommendation.current_signal_class_v1}
+              </span>
+            </>
+          )}
         </div>
+      </div>
 
-        <div
-          className={`signal-badge ${getSignalClass(
-            recommendation.current_signal_class_v1
-          )}`}
-        >
-          {recommendation.current_signal_class_v1 ||
-            "NO SIGNAL"}
-        </div>
+      <div className="recommendation-action">
+        <div className="score">{score.toFixed(2)}</div>
 
-        <button
-          type="button"
-          className="open-link"
-          onClick={() => onOpen(recommendation)}
-        >
+        <div className="open-link">
           Open
-          <ArrowUpRight
-            size={13}
-            strokeWidth={2}
-          />
-        </button>
+          <ArrowUpRight size={15} />
+        </div>
       </div>
     </article>
   );

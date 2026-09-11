@@ -1,26 +1,22 @@
+import React from "react";
+
 export default function MetricCard({
   label,
   value,
-  detail,
-  accent = "purple",
+  description,
+  accent = "plum",
 }) {
   return (
-    <article
-      className={`metric-card accent-${accent}`}
-    >
-      <div className="metric-label">
-        {label}
-      </div>
+    <div className={`metric-card metric-${accent}`}>
+      <div className="metric-label">{label}</div>
 
-      <div className="metric-value">
-        {value}
-      </div>
+      <div className="metric-value">{value}</div>
 
-      {detail && (
-        <div className="metric-detail">
-          {detail}
+      {description && (
+        <div className="metric-description">
+          {description}
         </div>
       )}
-    </article>
+    </div>
   );
 }

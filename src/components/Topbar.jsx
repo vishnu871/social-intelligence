@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Bell,
   Search,
@@ -5,61 +6,55 @@ import {
 } from "lucide-react";
 
 export default function Topbar({
+  search,
+  onSearchChange,
   onUpload,
-  searchValue,
-  setSearchValue,
+  title = "Social Intelligence",
 }) {
   return (
     <header className="topbar">
-      <div className="search-box">
-        <Search
-          size={17}
-          strokeWidth={1.8}
-        />
-
-        <input
-          type="text"
-          value={searchValue}
-          onChange={(event) =>
-            setSearchValue(event.target.value)
-          }
-          placeholder="Search recommendations..."
-          aria-label="Search recommendations"
-        />
+      <div className="topbar-left">
+        <h2 className="topbar-title">{title}</h2>
       </div>
 
-      <div className="topbar-actions">
-        <label className="upload-button">
-          <Upload
-            size={16}
-            strokeWidth={1.8}
-          />
-
-          <span>Load Cell 83 CSV</span>
+      <div className="topbar-right">
+        <div className="search-box">
+          <Search size={18} className="search-icon" />
 
           <input
-            type="file"
-            accept=".csv,text/csv"
-            onChange={onUpload}
-            hidden
+            type="text"
+            value={search}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search recommendations..."
+            aria-label="Search recommendations"
           />
+        </div>
+
+        <input
+          id="cell83-upload"
+          type="file"
+          accept=".csv,text/csv"
+          className="hidden-file-input"
+          onChange={onUpload}
+        />
+
+        <label
+          htmlFor="cell83-upload"
+          className="upload-button"
+        >
+          <Upload size={16} />
+          <span>Load Cell 83 CSV</span>
         </label>
 
         <button
           type="button"
-          className="icon-button"
+          className="topbar-button"
           aria-label="Notifications"
         >
-          <Bell
-            size={18}
-            strokeWidth={1.8}
-          />
+          <Bell size={18} />
         </button>
 
-        <div
-          className="user-avatar"
-          title="Zuva Life workspace"
-        >
+        <div className="avatar" aria-label="User">
           V
         </div>
       </div>

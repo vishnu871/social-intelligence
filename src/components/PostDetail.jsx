@@ -1,107 +1,22 @@
+import React from "react";
 import {
   ArrowLeft,
-  CalendarDays,
   CheckCircle2,
   Clock3,
-  Image,
-  MessageSquare,
-  ShieldCheck,
-  Sparkles,
-  TrendingUp,
-  Video,
+  Image as ImageIcon,
 } from "lucide-react";
 
 function formatHour(hour) {
-  if (hour === null || hour === undefined || hour === "") {
-    return "—";
-  }
-
   const numericHour = Number(hour);
 
-  if (Number.isNaN(numericHour)) {
-    return String(hour);
+  if (!Number.isFinite(numericHour)) {
+    return "—";
   }
 
-  const normalized = ((numericHour % 24) + 24) % 24;
-  const suffix = normalized >= 12 ? "PM" : "AM";
-  const displayHour = normalized % 12 || 12;
+  const suffix = numericHour >= 12 ? "PM" : "AM";
+  const displayHour = numericHour % 12 || 12;
 
   return `${displayHour}:00 ${suffix}`;
-}
-
-function getPlatformIcon(platform) {
-  const value = String(platform || "").toLowerCase();
-
-  if (value.includes("instagram")) {
-    return Image;
-  }
-
-  if (value.includes("linkedin")) {
-    return MessageSquare;
-  }
-
-  return CalendarDays;
-}
-
-function getFormatIcon(contentType) {
-  const value = String(contentType || "").toLowerCase();
-
-  if (
-    value.includes("reel") ||
-    value.includes("video")
-  ) {
-    return Video;
-  }
-
-  if (
-    value.includes("image") ||
-    value.includes("carousel")
-  ) {
-    return Image;
-  }
-
-  return MessageSquare;
-}
-
-function getSignalClass(signal) {
-  const value = String(signal || "").toLowerCase();
-
-  if (
-    value.includes("positive") ||
-    value.includes("strong") ||
-    value.includes("opportunity")
-  ) {
-    return "signal-positive";
-  }
-
-  if (
-    value.includes("watch") ||
-    value.includes("moderate")
-  ) {
-    return "signal-watch";
-  }
-
-  return "signal-neutral";
-}
-
-function formatPercentage(value) {
-  const numericValue = Number(value);
-
-  if (!Number.isFinite(numericValue)) {
-    return "—";
-  }
-
-  return `${(numericValue * 100).toFixed(1)}%`;
-}
-
-function formatScore(value) {
-  const numericValue = Number(value);
-
-  if (!Number.isFinite(numericValue)) {
-    return "—";
-  }
-
-  return numericValue.toFixed(2);
 }
 
 export default function PostDetail({
@@ -111,473 +26,236 @@ export default function PostDetail({
   if (!recommendation) {
     return (
       <div className="empty-state">
-        <strong>No recommendation selected</strong>
-        <p>
-          Select a recommendation from the dashboard
-          or weekly calendar.
-        </p>
+        <h3>No recommendation selected</h3>
+        <p>Select a recommendation to view its details.</p>
       </div>
     );
   }
 
-  const PlatformIcon = getPlatformIcon(
-    recommendation.platform
-  );
+  const structure =
+    recommendation.content_structure || null;
 
-  const FormatIcon = getFormatIcon(
-    recommendation.content_type
-  );
+  const slides =
+    Array.isArray(structure?.slides)
+      ? structure.slides
+      : Array.isArray(recommendation.slides)
+        ? recommendation.slides
+        : [];
 
-  const qaStatus =
-    recommendation.qa_status || "—";
-
-  const readiness =
-    recommendation.production_readiness_v1 ||
-    "—";
-
-  const isReady =
-    String(readiness).toLowerCase() === "ready";
+  const isCarousel =
+    String(recommendation.content_type || "")
+      .toLowerCase()
+      .includes("carousel");
 
   return (
-    <section className="detail-page">
+    <div className="detail-page">
       <button
         type="button"
-        className="detail-back"
+        className="back-button"
         onClick={onBack}
       >
-        <ArrowLeft
-          size={15}
-          strokeWidth={1.9}
-        />
+        <ArrowLeft size={16} />
         Back to recommendations
       </button>
 
-      <div className="detail-header">
-        <div className="detail-header-top">
-          <div>
-            <div className="detail-rank">
-              Recommendation #{recommendation.recommendation_rank_v1}
-            </div>
-
-            <h1 className="detail-title">
-              {recommendation.theme ||
-                "Unclassified recommendation"}
-            </h1>
-
-            <div className="detail-subtitle">
-              {recommendation.date || "—"} ·{" "}
-              {recommendation.day || "—"} ·{" "}
-              {recommendation.platform || "—"}
-            </div>
+      <div className="detail-layout">
+        <main className="detail-main">
+          <div className="detail-label">
+            Recommendation #{recommendation.recommendation_rank_v1}
           </div>
 
-          <div className="detail-score">
-            <div className="detail-score-label">
-              Opportunity Score
-            </div>
+          <h1 className="detail-title">
+            {recommendation.hook_v1}
+          </h1>
 
-            <div className="detail-score-value">
-              {formatScore(
-                recommendation.final_opportunity_score_v3
-              )}
-            </div>
+          <div className="detail-meta-row">
+            <span>{recommendation.platform}</span>
+            <span>·</span>
+            <span>{recommendation.content_type}</span>
+            <span>·</span>
+            <span>{recommendation.theme}</span>
           </div>
-        </div>
-      </div>
 
-      <div className="detail-grid">
-        <main>
+          {isCarousel && slides.length > 0 ? (
+            <section className="detail-section">
+              <div className="detail-section-heading">
+                <div>
+                  <div className="detail-label">
+                    Production Content
+                  </div>
+
+                  <h2>Carousel Slides</h2>
+                </div>
+
+                <div className="slide-count">
+                  {slides.length} slides
+                </div>
+              </div>
+
+              <div className="carousel-slides">
+                {slides.map((slide, index) => (
+                  <article
+                    className="carousel-slide"
+                    key={
+                      slide.slide_number || index
+                    }
+                  >
+                    <div className="slide-number">
+                      SLIDE{" "}
+                      {slide.slide_number || index + 1}
+                    </div>
+
+                    {slide.title && (
+                      <h3 className="slide-title">
+                        {slide.title}
+                      </h3>
+                    )}
+
+                    {slide.body && (
+                      <p className="slide-body">
+                        {slide.body}
+                      </p>
+                    )}
+
+                    {slide.visual_direction && (
+                      <div className="slide-visual">
+                        <ImageIcon size={14} />
+                        {slide.visual_direction}
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section className="detail-section">
+              <div className="detail-label">
+                Production Content
+              </div>
+
+              <h2>Post Copy</h2>
+
+              <p className="large-copy">
+                {recommendation.caption_v1 ||
+                  recommendation.hook_v1}
+              </p>
+            </section>
+          )}
+
           <section className="detail-section">
-            <div className="detail-section-header">
-              <h2>Content Recommendation</h2>
-            </div>
+            <div className="detail-label">Caption</div>
 
-            <div className="detail-section-body">
-              <div className="content-block">
-                <div className="content-label">
-                  Hook
-                </div>
+            <h2>Social Caption</h2>
 
-                <p className="content-text">
-                  {recommendation.hook_v1 ||
-                    "No hook available."}
-                </p>
-              </div>
-
-              <div className="content-block">
-                <div className="content-label">
-                  Caption
-                </div>
-
-                <p className="content-text">
-                  {recommendation.caption_v1 ||
-                    "No caption available."}
-                </p>
-              </div>
-
-              <div className="content-block">
-                <div className="content-label">
-                  Call to Action
-                </div>
-
-                <p className="content-text">
-                  {recommendation.cta_v1 ||
-                    "No CTA available."}
-                </p>
-              </div>
-
-              <div className="content-block">
-                <div className="content-label">
-                  Creative Direction
-                </div>
-
-                <div className="creative-direction">
-                  {recommendation.creative_direction_v1 ||
-                    "No creative direction available."}
-                </div>
-              </div>
-            </div>
+            <p className="large-copy">
+              {recommendation.caption_v1 || "No caption available."}
+            </p>
           </section>
 
           <section className="detail-section">
-            <div className="detail-section-header">
-              <h2>Intelligence Reasoning</h2>
+            <div className="detail-label">Call to Action</div>
+
+            <h2>CTA</h2>
+
+            <p className="large-copy">
+              {recommendation.cta_v1 || "No CTA available."}
+            </p>
+          </section>
+
+          <section className="detail-section">
+            <div className="detail-label">
+              Creative Direction
             </div>
 
-            <div className="detail-section-body">
-              <div className="reasoning-grid">
-                <div className="reasoning-item">
-                  <div className="reasoning-item-label">
-                    Final Opportunity
-                  </div>
+            <h2>Creative Direction</h2>
 
-                  <div className="reasoning-item-value">
-                    {formatScore(
-                      recommendation.final_opportunity_score_v3
-                    )}
-                  </div>
-                </div>
-
-                <div className="reasoning-item">
-                  <div className="reasoning-item-label">
-                    Historical Opportunity
-                  </div>
-
-                  <div className="reasoning-item-value">
-                    {formatScore(
-                      recommendation.historical_opportunity_v3
-                    )}
-                  </div>
-                </div>
-
-                <div className="reasoning-item">
-                  <div className="reasoning-item-label">
-                    Evidence Strength
-                  </div>
-
-                  <div className="reasoning-item-value">
-                    {formatPercentage(
-                      recommendation.historical_evidence_strength_v3
-                    )}
-                  </div>
-                </div>
-
-                <div className="reasoning-item">
-                  <div className="reasoning-item-label">
-                    Evidence Coverage
-                  </div>
-
-                  <div className="reasoning-item-value">
-                    {formatPercentage(
-                      recommendation.historical_evidence_coverage_v3
-                    )}
-                  </div>
-                </div>
-
-                <div className="reasoning-item">
-                  <div className="reasoning-item-label">
-                    Current-World Relevance
-                  </div>
-
-                  <div className="reasoning-item-value">
-                    {formatScore(
-                      recommendation.current_world_relevance_v3
-                    )}
-                  </div>
-                </div>
-
-                <div className="reasoning-item">
-                  <div className="reasoning-item-label">
-                    Current Signal
-                  </div>
-
-                  <div className="reasoning-item-value">
-                    {recommendation.current_signal_class_v1 ||
-                      "NO SIGNAL"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="reasoning-note">
-                <strong>Decision:</strong>{" "}
-                {recommendation.decision_v3 ||
-                  "—"}
-                <br />
-                <strong>Reason:</strong>{" "}
-                {recommendation.current_world_reason_v3 ||
-                  "The recommendation is supported by the current production scoring and evidence fields."}
-              </div>
-            </div>
+            <p className="large-copy">
+              {recommendation.creative_direction_v1 ||
+                "No creative direction available."}
+            </p>
           </section>
         </main>
 
-        <aside>
-          <section className="detail-section">
-            <div className="detail-section-header">
-              <h2>Posting Recommendation</h2>
-            </div>
+        <aside className="detail-sidebar">
+          <div className="detail-sidebar-heading">
+            Recommendation Intelligence
+          </div>
 
-            <div className="detail-section-body">
-              <div
-                className="platform-large"
-                title={recommendation.platform}
-              >
-                <PlatformIcon
-                  size={22}
-                  strokeWidth={1.8}
-                />
-              </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">
+              Opportunity Score
+            </span>
 
-              <div
-                className="posting-list"
-                style={{ marginTop: "16px" }}
-              >
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Platform
-                  </span>
+            <strong className="detail-score">
+              {Number(
+                recommendation.final_opportunity_score_v3 || 0
+              ).toFixed(2)}
+            </strong>
+          </div>
 
-                  <span className="posting-value">
-                    {recommendation.platform || "—"}
-                  </span>
-                </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">
+              Platform
+            </span>
 
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Date
-                  </span>
+            <strong>{recommendation.platform}</strong>
+          </div>
 
-                  <span className="posting-value">
-                    {recommendation.date || "—"}
-                  </span>
-                </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">
+              Publishing Time
+            </span>
 
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Day
-                  </span>
+            <strong>
+              <Clock3 size={14} />
+              {formatHour(recommendation.hour)}
+            </strong>
+          </div>
 
-                  <span className="posting-value">
-                    {recommendation.day || "—"}
-                  </span>
-                </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">
+              Evidence Strength
+            </span>
 
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Time
-                  </span>
+            <strong>
+              {(
+                Number(
+                  recommendation
+                    .historical_evidence_strength_v3 || 0
+                ) * 100
+              ).toFixed(0)}
+              %
+            </strong>
+          </div>
 
-                  <span className="posting-value">
-                    {formatHour(
-                      recommendation.hour
-                    )}
-                  </span>
-                </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">
+              Evidence Coverage
+            </span>
 
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Format
-                  </span>
+            <strong>
+              {(
+                Number(
+                  recommendation
+                    .historical_evidence_coverage_v3 || 0
+                ) * 100
+              ).toFixed(0)}
+              %
+            </strong>
+          </div>
 
-                  <span className="posting-value">
-                    <FormatIcon
-                      size={13}
-                      strokeWidth={1.8}
-                    />{" "}
-                    {recommendation.content_type ||
-                      "—"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </section>
+          <div className="detail-stat">
+            <span className="detail-stat-label">
+              QA Status
+            </span>
 
-          <section className="detail-section">
-            <div className="detail-section-header">
-              <h2>Evidence</h2>
-            </div>
-
-            <div className="detail-section-body">
-              <div className="posting-list">
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Evidence strength
-                  </span>
-
-                  <span className="posting-value">
-                    {formatPercentage(
-                      recommendation.historical_evidence_strength_v3
-                    )}
-                  </span>
-                </div>
-
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Evidence coverage
-                  </span>
-
-                  <span className="posting-value">
-                    {formatPercentage(
-                      recommendation.historical_evidence_coverage_v3
-                    )}
-                  </span>
-                </div>
-
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Current relevance
-                  </span>
-
-                  <span className="posting-value">
-                    {formatScore(
-                      recommendation.current_world_relevance_v3
-                    )}
-                  </span>
-                </div>
-
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Signal
-                  </span>
-
-                  <span
-                    className={`detail-signal ${getSignalClass(
-                      recommendation.current_signal_class_v1
-                    )}`}
-                  >
-                    {recommendation.current_signal_class_v1 ||
-                      "NO SIGNAL"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="detail-section">
-            <div className="detail-section-header">
-              <h2>Production State</h2>
-            </div>
-
-            <div className="detail-section-body">
-              <div className="posting-list">
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Production readiness
-                  </span>
-
-                  <span className="posting-value">
-                    {isReady ? (
-                      <CheckCircle2
-                        size={15}
-                        strokeWidth={1.8}
-                      />
-                    ) : (
-                      <ShieldCheck
-                        size={15}
-                        strokeWidth={1.8}
-                      />
-                    )}{" "}
-                    {readiness}
-                  </span>
-                </div>
-
-                <div className="posting-row">
-                  <span className="posting-label">
-                    QA status
-                  </span>
-
-                  <span className="posting-value">
-                    {qaStatus}
-                  </span>
-                </div>
-
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Manual review
-                  </span>
-
-                  <span className="posting-value">
-                    {recommendation.manual_review_required_v1 ||
-                      "—"}
-                  </span>
-                </div>
-
-                <div className="posting-row">
-                  <span className="posting-label">
-                    Approval ID
-                  </span>
-
-                  <span className="posting-value">
-                    {recommendation.approval_id_v1 ||
-                      "—"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="detail-section">
-            <div className="detail-section-body">
-              <div
-                className="posting-row"
-                style={{
-                  borderBottom: "0",
-                  paddingBottom: "0",
-                }}
-              >
-                <Sparkles
-                  size={18}
-                  strokeWidth={1.8}
-                />
-
-                <span className="posting-value">
-                  Production ID:{" "}
-                  {recommendation.production_id_v1 ||
-                    "—"}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  marginTop: "10px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "7px",
-                  color: "var(--teal)",
-                  fontSize: "10px",
-                }}
-              >
-                <TrendingUp
-                  size={13}
-                  strokeWidth={1.8}
-                />
-
-                Cell 83 production recommendation
-              </div>
-            </div>
-          </section>
+            <strong className="qa-value">
+              <CheckCircle2 size={14} />
+              {recommendation.qa_status || "UNKNOWN"}
+            </strong>
+          </div>
         </aside>
       </div>
-    </section>
+    </div>
   );
 }
