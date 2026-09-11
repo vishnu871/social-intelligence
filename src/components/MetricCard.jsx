@@ -4,19 +4,20 @@ export default function MetricCard({
   label,
   value,
   description,
-  accent = "plum",
 }) {
   return (
-    <div className={`metric-card metric-${accent}`}>
-      <div className="metric-label">{label}</div>
+    <article className="metric-card">
+      <div className="metric-label">
+        {label}
+      </div>
 
-      <div className="metric-value">{value}</div>
+      <div className="metric-value">
+        {value}
+      </div>
 
-      {description && (
-        <div className="metric-description">
-          {description}
-        </div>
-      )}
-    </div>
+      <div className="metric-description">
+        {description}
+      </div>
+    </article>
   );
 }

@@ -10,15 +10,19 @@ import IntelligenceChat from "./components/IntelligenceChat";
 
 import { createRemainingRecommendations } from "./data/demoData";
 
-
 function toNumber(value, fallback = 0) {
   const number = Number(value);
 
-  return Number.isFinite(number) ? number : fallback;
+  return Number.isFinite(number)
+    ? number
+    : fallback;
 }
 
-
-function getField(row, names, fallback = "") {
+function getField(
+  row,
+  names,
+  fallback = ""
+) {
   for (const name of names) {
     if (
       row[name] !== undefined &&
@@ -32,13 +36,17 @@ function getField(row, names, fallback = "") {
   return fallback;
 }
 
-
 function parseCSVLine(line) {
   const result = [];
+
   let current = "";
   let insideQuotes = false;
 
-  for (let index = 0; index < line.length; index += 1) {
+  for (
+    let index = 0;
+    index < line.length;
+    index += 1
+  ) {
     const character = line[index];
 
     if (character === '"') {
@@ -49,13 +57,17 @@ function parseCSVLine(line) {
         current += '"';
         index += 1;
       } else {
-        insideQuotes = !insideQuotes;
+        insideQuotes =
+          !insideQuotes;
       }
 
       continue;
     }
 
-    if (character === "," && !insideQuotes) {
+    if (
+      character === "," &&
+      !insideQuotes
+    ) {
       result.push(current);
       current = "";
       continue;
@@ -69,78 +81,101 @@ function parseCSVLine(line) {
   return result;
 }
 
-
 function parseCSV(text) {
   const lines = text
     .replace(/\r/g, "")
     .split("\n")
-    .filter((line) => line.trim());
+    .filter(
+      (line) => line.trim()
+    );
 
   if (lines.length < 2) {
     return [];
   }
 
-  const headers = parseCSVLine(lines[0]).map(
-    (header) => header.trim()
-  );
+  const headers =
+    parseCSVLine(lines[0]).map(
+      (header) =>
+        header.trim()
+    );
 
-  return lines.slice(1).map((line) => {
-    const values = parseCSVLine(line);
-    const row = {};
+  return lines
+    .slice(1)
+    .map((line) => {
+      const values =
+        parseCSVLine(line);
 
-    headers.forEach((header, index) => {
-      row[header] = values[index] || "";
+      const row = {};
+
+      headers.forEach(
+        (header, index) => {
+          row[header] =
+            values[index] || "";
+        }
+      );
+
+      return row;
     });
-
-    return row;
-  });
 }
 
-
-function normalizeRecommendation(row, index) {
-  const platform = getField(
-    row,
-    ["platform", "Platform"],
-    "Facebook"
-  );
-
-  const contentType = getField(
-    row,
-    ["content_type", "Content Type"],
-    "Single Image"
-  );
-
-  const theme = getField(
-    row,
-    ["theme", "Theme"],
-    "Social Intelligence"
-  );
-
-  const date = getField(
-    row,
-    ["date", "Date"],
-    "2026-09-14"
-  );
-
-  const numericHour = toNumber(
+function normalizeRecommendation(
+  row,
+  index
+) {
+  const platform =
     getField(
       row,
-      ["hour", "Hour"],
-      13
-    ),
-    13
-  );
+      ["platform", "Platform"],
+      "Facebook"
+    );
 
-  const parsedDate = new Date(
-    `${date}T12:00:00`
-  );
+  const contentType =
+    getField(
+      row,
+      [
+        "content_type",
+        "Content Type",
+      ],
+      "Single Image"
+    );
+
+  const theme =
+    getField(
+      row,
+      ["theme", "Theme"],
+      "Social Intelligence"
+    );
+
+  const date =
+    getField(
+      row,
+      ["date", "Date"],
+      "2026-09-14"
+    );
+
+  const numericHour =
+    toNumber(
+      getField(
+        row,
+        ["hour", "Hour"],
+        13
+      ),
+      13
+    );
+
+  const parsedDate =
+    new Date(
+      `${date}T12:00:00`
+    );
 
   const day =
-    parsedDate.toString() !== "Invalid Date"
+    parsedDate.toString() !==
+    "Invalid Date"
       ? parsedDate.toLocaleDateString(
           "en-US",
           {
-            weekday: "long",
+            weekday:
+              "long",
           }
         )
       : getField(
@@ -152,45 +187,49 @@ function normalizeRecommendation(row, index) {
   return {
     ...row,
 
-    recommendation_rank_v1: toNumber(
+    recommendation_rank_v1:
+      toNumber(
+        getField(
+          row,
+          [
+            "recommendation_rank_v1",
+            "recommendation_rank",
+            "rank",
+          ],
+          index + 1
+        ),
+        index + 1
+      ),
+
+    production_id_v1:
       getField(
         row,
         [
-          "recommendation_rank_v1",
-          "recommendation_rank",
-          "rank",
+          "production_id_v1",
+          "production_id",
         ],
-        index + 1
+        `CSV-${index + 1}`
       ),
-      index + 1
-    ),
 
-    production_id_v1: getField(
-      row,
-      [
-        "production_id_v1",
-        "production_id",
-      ],
-      `CSV-${index + 1}`
-    ),
+    content_brief_id_v1:
+      getField(
+        row,
+        [
+          "content_brief_id_v1",
+          "content_brief_id",
+        ],
+        `CB-${index + 1}`
+      ),
 
-    content_brief_id_v1: getField(
-      row,
-      [
-        "content_brief_id_v1",
-        "content_brief_id",
-      ],
-      `CB-${index + 1}`
-    ),
-
-    approval_id_v1: getField(
-      row,
-      [
-        "approval_id_v1",
-        "approval_id",
-      ],
-      `APR-${index + 1}`
-    ),
+    approval_id_v1:
+      getField(
+        row,
+        [
+          "approval_id_v1",
+          "approval_id",
+        ],
+        `APR-${index + 1}`
+      ),
 
     date,
 
@@ -200,7 +239,8 @@ function normalizeRecommendation(row, index) {
 
     platform,
 
-    content_type: contentType,
+    content_type:
+      contentType,
 
     theme,
 
@@ -271,17 +311,19 @@ function normalizeRecommendation(row, index) {
         )
       ),
 
-    decision_v3: getField(
-      row,
-      ["decision_v3"],
-      "SELECT"
-    ),
+    decision_v3:
+      getField(
+        row,
+        ["decision_v3"],
+        "SELECT"
+      ),
 
-    qa_status: getField(
-      row,
-      ["qa_status"],
-      "UNKNOWN"
-    ),
+    qa_status:
+      getField(
+        row,
+        ["qa_status"],
+        "UNKNOWN"
+      ),
 
     manual_review_required_v1:
       String(
@@ -292,7 +334,8 @@ function normalizeRecommendation(row, index) {
           ],
           "false"
         )
-      ).toLowerCase() === "true",
+      ).toLowerCase() ===
+      "true",
 
     production_readiness_v1:
       getField(
@@ -303,33 +346,36 @@ function normalizeRecommendation(row, index) {
         "REVIEW"
       ),
 
-    hook_v1: getField(
-      row,
-      [
-        "hook_v1",
-        "hook",
-        "title",
-      ],
-      "Untitled recommendation"
-    ),
+    hook_v1:
+      getField(
+        row,
+        [
+          "hook_v1",
+          "hook",
+          "title",
+        ],
+        "Untitled recommendation"
+      ),
 
-    caption_v1: getField(
-      row,
-      [
-        "caption_v1",
-        "caption",
-      ],
-      ""
-    ),
+    caption_v1:
+      getField(
+        row,
+        [
+          "caption_v1",
+          "caption",
+        ],
+        ""
+      ),
 
-    cta_v1: getField(
-      row,
-      [
-        "cta_v1",
-        "cta",
-      ],
-      ""
-    ),
+    cta_v1:
+      getField(
+        row,
+        [
+          "cta_v1",
+          "cta",
+        ],
+        ""
+      ),
 
     creative_direction_v1:
       getField(
@@ -353,69 +399,71 @@ function Dashboard({
   onOpen,
   onNavigate,
 }) {
-  const sorted = useMemo(
-    () =>
-      [...recommendations].sort(
-        (a, b) =>
-          Number(
-            b.final_opportunity_score_v3 || 0
-          ) -
-          Number(
-            a.final_opportunity_score_v3 || 0
-          )
-      ),
-    [recommendations]
-  );
+  const sorted =
+    useMemo(
+      () =>
+        [...recommendations].sort(
+          (a, b) =>
+            Number(
+              b.final_opportunity_score_v3 ||
+                0
+            ) -
+            Number(
+              a.final_opportunity_score_v3 ||
+                0
+            )
+        ),
+      [recommendations]
+    );
 
-  const themes = new Set(
-    recommendations.map(
-      (item) => item.theme
-    )
-  );
+  const themes =
+    new Set(
+      recommendations.map(
+        (item) => item.theme
+      )
+    );
 
-  const platforms = new Set(
-    recommendations.map(
-      (item) => item.platform
-    )
-  );
+  const platforms =
+    new Set(
+      recommendations.map(
+        (item) =>
+          item.platform
+      )
+    );
 
   const averageScore =
-    recommendations.length > 0
+    recommendations.length >
+    0
       ? recommendations.reduce(
-          (sum, item) =>
+          (
+            sum,
+            item
+          ) =>
             sum +
             Number(
               item.final_opportunity_score_v3 ||
                 0
             ),
           0
-        ) / recommendations.length
+        ) /
+        recommendations.length
       : 0;
 
-  const dates = recommendations
-    .map((item) => item.date)
-    .filter(Boolean)
-    .sort();
+  const dates =
+    recommendations
+      .map(
+        (item) => item.date
+      )
+      .filter(Boolean)
+      .sort();
 
   const startDate =
     dates[0] || "—";
 
   const endDate =
-    dates[dates.length - 1] || "—";
-
-  const evidenceCoverage =
-    recommendations.length > 0
-      ? recommendations.reduce(
-          (sum, item) =>
-            sum +
-            Number(
-              item
-                .historical_evidence_coverage_v3 ||
-                0
-            ),
-          0
-        ) / recommendations.length
-      : 0;
+    dates[
+      dates.length - 1
+    ] || "—";
 
   return (
     <>
@@ -430,12 +478,14 @@ function Dashboard({
           </h1>
 
           <p>
-            Your current social intelligence
-            portfolio is ready for review.
+            Your current social
+            intelligence portfolio
+            is ready for review.
           </p>
 
           <div className="date-range">
-            {startDate} — {endDate}
+            {startDate} —{" "}
+            {endDate}
           </div>
         </div>
 
@@ -444,7 +494,9 @@ function Dashboard({
             type="button"
             className="secondary-button"
             onClick={() =>
-              onNavigate("calendar")
+              onNavigate(
+                "calendar"
+              )
             }
           >
             Weekly calendar
@@ -454,7 +506,9 @@ function Dashboard({
             type="button"
             className="primary-button"
             onClick={() =>
-              onNavigate("approval")
+              onNavigate(
+                "approval"
+              )
             }
           >
             Review portfolio
@@ -465,30 +519,32 @@ function Dashboard({
       <div className="metrics-grid">
         <MetricCard
           label="Recommended posts"
-          value={recommendations.length}
+          value={
+            recommendations.length
+          }
           description="Current intelligence portfolio"
-          accent="plum"
         />
 
         <MetricCard
           label="Average opportunity"
-          value={averageScore.toFixed(2)}
+          value={averageScore.toFixed(
+            2
+          )}
           description="Final opportunity score"
-          accent="plum"
         />
 
         <MetricCard
           label="Themes"
           value={themes.size}
           description="Strategic diversity"
-          accent="plum"
         />
 
         <MetricCard
           label="Platforms"
-          value={platforms.size}
+          value={
+            platforms.size
+          }
           description="Active publishing channels"
-          accent="plum"
         />
       </div>
 
@@ -510,7 +566,9 @@ function Dashboard({
               type="button"
               className="view-all"
               onClick={() =>
-                onNavigate("calendar")
+                onNavigate(
+                  "calendar"
+                )
               }
             >
               View all
@@ -520,16 +578,22 @@ function Dashboard({
           <div className="recommendations-grid">
             {sorted
               .slice(0, 6)
-              .map((item) => (
-                <RecommendationCard
-                  key={
-                    item.production_id_v1 ||
-                    item.recommendation_rank_v1
-                  }
-                  recommendation={item}
-                  onOpen={onOpen}
-                />
-              ))}
+              .map(
+                (item) => (
+                  <RecommendationCard
+                    key={
+                      item.production_id_v1 ||
+                      item.recommendation_rank_v1
+                    }
+                    recommendation={
+                      item
+                    }
+                    onOpen={
+                      onOpen
+                    }
+                  />
+                )
+              )}
           </div>
         </section>
 
@@ -548,19 +612,24 @@ function Dashboard({
             </h2>
 
             <p>
-              Ask about content, trends,
-              evidence, recommendations,
-              platforms or strategy.
+              Ask about content,
+              trends, evidence,
+              recommendations,
+              platforms or
+              strategy.
             </p>
 
             <button
               type="button"
               className="primary-button full-button"
               onClick={() =>
-                onNavigate("intelligence")
+                onNavigate(
+                  "intelligence"
+                )
               }
             >
-              Ask Social Intelligence
+              Ask Social
+              Intelligence
             </button>
           </section>
 
@@ -578,15 +647,31 @@ function Dashboard({
             </div>
 
             <div className="health-number">
-              {Math.round(
-                evidenceCoverage * 100
-              )}
+              {recommendations.length
+                ? Math.round(
+                    (recommendations.reduce(
+                      (
+                        sum,
+                        item
+                      ) =>
+                        sum +
+                        Number(
+                          item.historical_evidence_coverage_v3 ||
+                            0
+                        ),
+                      0
+                    ) /
+                      recommendations.length) *
+                      100
+                  )
+                : 0}
               %
             </div>
 
             <p className="health-copy">
-              Historical evidence coverage
-              across the current portfolio.
+              Historical evidence
+              coverage across the
+              current portfolio.
             </p>
           </section>
         </aside>
@@ -625,8 +710,10 @@ function ApprovalPage({
       </h1>
 
       <p>
-        Review recommendations that require
-        human approval before publishing.
+        Review recommendations
+        that require human
+        approval before
+        publishing.
       </p>
 
       <div className="approval-summary">
@@ -640,54 +727,61 @@ function ApprovalPage({
       </div>
 
       <div className="approval-list">
-        {reviewItems.map((item) => (
-          <button
-            type="button"
-            className="approval-row"
-            key={
-              item.production_id_v1 ||
-              item.recommendation_rank_v1
-            }
-            onClick={() =>
-              onOpen(item)
-            }
-          >
-            <span className="approval-rank">
-              #
-              {
+        {reviewItems.map(
+          (item) => (
+            <button
+              type="button"
+              className="approval-row"
+              key={
+                item.production_id_v1 ||
                 item.recommendation_rank_v1
               }
-            </span>
+              onClick={() =>
+                onOpen(item)
+              }
+            >
+              <span className="approval-rank">
+                #
+                {
+                  item.recommendation_rank_v1
+                }
+              </span>
 
-            <span className="approval-content">
-              <strong>
-                {item.hook_v1}
-              </strong>
+              <span className="approval-content">
+                <strong>
+                  {item.hook_v1}
+                </strong>
 
-              <small>
-                {item.theme} ·{" "}
-                {item.platform} ·{" "}
-                {item.content_type}
-              </small>
-            </span>
+                <small>
+                  {item.theme} ·{" "}
+                  {item.platform} ·{" "}
+                  {
+                    item.content_type
+                  }
+                </small>
+              </span>
 
-            <span className="approval-status">
-              {item.qa_status ||
-                "REVIEW"}
-            </span>
-          </button>
-        ))}
+              <span className="approval-status">
+                {item.qa_status ||
+                  "REVIEW"}
+              </span>
+            </button>
+          )
+        )}
 
-        {reviewItems.length === 0 && (
+        {reviewItems.length ===
+          0 && (
           <div className="empty-state">
             <h3>
-              Nothing needs review.
+              Nothing needs
+              review.
             </h3>
 
             <p>
-              All currently loaded
-              recommendations have passed
-              the review gate.
+              All currently
+              loaded recommendations
+              have passed the
+              review gate.
             </p>
           </div>
         )}
@@ -712,7 +806,9 @@ export default function App() {
   const [
     activePage,
     setActivePage,
-  ] = useState("dashboard");
+  ] = useState(
+    "dashboard"
+  );
 
   const [
     selectedRecommendation,
@@ -724,11 +820,12 @@ export default function App() {
     setSearch,
   ] = useState("");
 
-
   const filteredRecommendations =
     useMemo(() => {
       const query =
-        search.trim().toLowerCase();
+        search
+          .trim()
+          .toLowerCase();
 
       if (!query) {
         return recommendations;
@@ -758,22 +855,37 @@ export default function App() {
     ]);
 
 
-  function openRecommendation(item) {
-    setSelectedRecommendation(item);
-    setActivePage("detail");
+  function openRecommendation(
+    item
+  ) {
+    setSelectedRecommendation(
+      item
+    );
+
+    setActivePage(
+      "detail"
+    );
   }
 
 
-  function handleNavigate(page) {
+  function handleNavigate(
+    page
+  ) {
     setActivePage(page);
 
-    if (page !== "detail") {
-      setSelectedRecommendation(null);
+    if (
+      page !== "detail"
+    ) {
+      setSelectedRecommendation(
+        null
+      );
     }
   }
 
 
-  async function handleUpload(event) {
+  async function handleUpload(
+    event
+  ) {
     const file =
       event.target.files?.[0];
 
@@ -817,21 +929,28 @@ export default function App() {
         `Loaded ${normalized.length} recommendations from the Cell 83 CSV.`
       );
     } catch (error) {
-      console.error(error);
+      console.error(
+        error
+      );
 
       window.alert(
         "Unable to read this CSV file."
       );
     }
 
-    event.target.value = "";
+    event.target.value =
+      "";
   }
 
 
-  let pageContent;
+  let pageContent =
+    null;
 
 
-  if (activePage === "dashboard") {
+  if (
+    activePage ===
+    "dashboard"
+  ) {
     pageContent = (
       <Dashboard
         recommendations={
@@ -848,33 +967,28 @@ export default function App() {
   }
 
 
-  /*
-   * IMPORTANT:
-   *
-   * CalendarView already owns its complete
-   * page header and calendar layout.
-   *
-   * Therefore we do NOT wrap it in another
-   * .page-header.
-   */
-  else if (
-    activePage === "calendar"
+  if (
+    activePage ===
+    "calendar"
   ) {
     pageContent = (
-      <CalendarView
-        recommendations={
-          filteredRecommendations
-        }
-        onSelectPost={
-          openRecommendation
-        }
-      />
+      <div className="page-header">
+        <CalendarView
+          recommendations={
+            filteredRecommendations
+          }
+          onSelectPost={
+            openRecommendation
+          }
+        />
+      </div>
     );
   }
 
 
-  else if (
-    activePage === "intelligence"
+  if (
+    activePage ===
+    "intelligence"
   ) {
     pageContent = (
       <IntelligenceChat
@@ -886,8 +1000,9 @@ export default function App() {
   }
 
 
-  else if (
-    activePage === "approval"
+  if (
+    activePage ===
+    "approval"
   ) {
     pageContent = (
       <ApprovalPage
@@ -902,8 +1017,9 @@ export default function App() {
   }
 
 
-  else if (
-    activePage === "detail"
+  if (
+    activePage ===
+    "detail"
   ) {
     pageContent = (
       <PostDetail
@@ -945,13 +1061,13 @@ export default function App() {
             "intelligence"
               ? "Ask Intelligence"
               : activePage ===
-                  "calendar"
+                "calendar"
                 ? "Weekly Calendar"
                 : activePage ===
-                    "approval"
+                  "approval"
                   ? "Approval"
                   : activePage ===
-                      "detail"
+                    "detail"
                     ? "Recommendation"
                     : "Social Intelligence"
           }

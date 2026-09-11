@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
-  Bell,
   Search,
   Upload,
+  Bell,
 } from "lucide-react";
 
 export default function Topbar({
@@ -11,50 +11,79 @@ export default function Topbar({
   onUpload,
   title = "Social Intelligence",
 }) {
+  const fileInputRef =
+    useRef(null);
+
+  function handleUploadClick() {
+    fileInputRef.current?.click();
+  }
+
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <h2 className="topbar-title">{title}</h2>
+        <h2 className="topbar-title">
+          {title}
+        </h2>
       </div>
 
-      <div className="topbar-right">
-        <div className="search-box">
-          <Search size={18} className="search-icon" />
+      <div className="topbar-actions">
+        <div className="topbar-search">
+          <Search
+            size={19}
+            strokeWidth={1.8}
+          />
 
           <input
-            type="text"
+            type="search"
             value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
+            onChange={(event) =>
+              onSearchChange(
+                event.target.value
+              )
+            }
             placeholder="Search recommendations..."
             aria-label="Search recommendations"
           />
         </div>
 
         <input
-          id="cell83-upload"
+          ref={fileInputRef}
           type="file"
           accept=".csv,text/csv"
-          className="hidden-file-input"
           onChange={onUpload}
+          className="hidden-file-input"
         />
-
-        <label
-          htmlFor="cell83-upload"
-          className="upload-button"
-        >
-          <Upload size={16} />
-          <span>Load Cell 83 CSV</span>
-        </label>
 
         <button
           type="button"
-          className="topbar-button"
-          aria-label="Notifications"
+          className="topbar-upload"
+          onClick={handleUploadClick}
         >
-          <Bell size={18} />
+          <Upload
+            size={17}
+            strokeWidth={1.9}
+          />
+
+          <span>
+            Load Cell 83 CSV
+          </span>
         </button>
 
-        <div className="avatar" aria-label="User">
+        <button
+          type="button"
+          className="topbar-icon-button"
+          aria-label="Notifications"
+        >
+          <Bell
+            size={18}
+            strokeWidth={1.8}
+          />
+        </button>
+
+        <div
+          className="topbar-avatar"
+          aria-label="User"
+        >
           V
         </div>
       </div>

@@ -1,13 +1,29 @@
 import React from "react";
 import {
-  ArrowUpRight,
-  CalendarDays,
   Clock3,
-  Image as ImageIcon,
+  ArrowUpRight,
 } from "lucide-react";
 
-function getPlatformShortName(platform) {
-  return platform || "Platform";
+function formatTime(hour) {
+  const numericHour = Number(hour);
+
+  if (
+    !Number.isFinite(numericHour)
+  ) {
+    return "Time not set";
+  }
+
+  const period =
+    numericHour >= 12
+      ? "PM"
+      : "AM";
+
+  const displayHour =
+    numericHour % 12 === 0
+      ? 12
+      : numericHour % 12;
+
+  return `${displayHour}:00 ${period}`;
 }
 
 export default function RecommendationCard({
@@ -18,75 +34,84 @@ export default function RecommendationCard({
     return null;
   }
 
-  const score = Number(
-    recommendation.final_opportunity_score_v3 || 0
-  );
+  const rank =
+    recommendation
+      .recommendation_rank_v1 ??
+    "—";
+
+  const score =
+    Number(
+      recommendation
+        .final_opportunity_score_v3
+    );
 
   return (
-    <article
+    <button
+      type="button"
       className="recommendation-card"
-      onClick={() => onOpen(recommendation)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onOpen(recommendation);
-        }
-      }}
+      onClick={() =>
+        onOpen?.(recommendation)
+      }
     >
-      <div className="recommendation-rank">
-        #{recommendation.recommendation_rank_v1}
+      <div className="recommendation-top">
+        <span className="recommendation-rank">
+          #{rank}
+        </span>
+
+        <span className="recommendation-score">
+          {Number.isFinite(score)
+            ? score.toFixed(2)
+            : "—"}
+        </span>
       </div>
 
-      <div className="recommendation-content">
-        <div className="recommendation-theme">
-          {recommendation.theme}
-        </div>
+      <div className="recommendation-theme">
+        {recommendation.theme ||
+          "Unspecified theme"}
+      </div>
 
-        <h3 className="recommendation-title">
-          {recommendation.hook_v1 || "Untitled recommendation"}
-        </h3>
+      <h3>
+        {recommendation.hook_v1 ||
+          "Untitled recommendation"}
+      </h3>
 
-        <div className="recommendation-meta">
-          <span>
-            {getPlatformShortName(recommendation.platform)}
-          </span>
+      <div className="recommendation-meta">
+        <span>
+          {recommendation.platform ||
+            "Platform"}
+        </span>
 
-          <span className="meta-separator">·</span>
+        <span>•</span>
 
-          <span>
-            <Clock3 size={13} />
-            {Number(recommendation.hour) || 0}:00
-          </span>
+        <span>
+          {recommendation.content_type ||
+            "Content"}
+        </span>
+      </div>
 
-          <span className="meta-separator">·</span>
+      <div className="recommendation-time">
+        <Clock3
+          size={14}
+          strokeWidth={1.8}
+        />
 
-          <span>
-            <ImageIcon size={13} />
-            {recommendation.content_type || "Content"}
-          </span>
-
-          {recommendation.current_signal_class_v1 && (
-            <>
-              <span className="meta-separator">·</span>
-
-              <span className="signal-text">
-                {recommendation.current_signal_class_v1}
-              </span>
-            </>
+        <span>
+          {formatTime(
+            recommendation.hour
           )}
-        </div>
+        </span>
       </div>
 
       <div className="recommendation-action">
-        <div className="score">{score.toFixed(2)}</div>
+        <span>
+          View recommendation
+        </span>
 
-        <div className="open-link">
-          Open
-          <ArrowUpRight size={15} />
-        </div>
+        <ArrowUpRight
+          size={16}
+          strokeWidth={1.8}
+        />
       </div>
-    </article>
+    </button>
   );
 }
